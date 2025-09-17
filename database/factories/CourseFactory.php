@@ -17,7 +17,9 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'course_name' => $this->faker->sentence(3),
+            'course_code' => strtoupper($this->faker->bothify('???###')),
+            'description' => $this->faker->paragraph(),
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Course;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,9 @@ class EnrollmentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'student_id' => Student::inRandomOrder()->first()->id ?? Student::factory(),
+            'course_id'  => Course::inRandomOrder()->first()->id ?? Course::factory(),
+            'enrolled_at' => $this->faker->date(),
         ];
     }
 }
