@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
 
@@ -10,34 +11,28 @@ class EnrollmentController extends Controller
     public function index()
     {
         return response()->json(
-            Enrollment::with(['student', 'course'])->get()
+            Enrollment::with(['student', 'course'])
+                ->orderBy('enrolled_at', 'desc')
+                ->get()
         );
     }
 
     public function store(Request $request)
     {
-        $enrollment = Enrollment::create($request->validate([
+        $data = $request->validate([
             'student_id'  => 'required|exists:students,id',
             'course_id'   => 'required|exists:courses,id',
-            'enrolled_at' => 'required|date',
-        ]));
+        ]);
+
+        $data['enrolled_at'] = now();
+
+        $enrollment = Enrollment::create($data);
 
         return response()->json($enrollment->load(['student', 'course']), 201);
     }
 
     public function show(Enrollment $enrollment)
     {
-        return response()->json($enrollment->load(['student', 'course']));
-    }
-
-    public function update(Request $request, Enrollment $enrollment)
-    {
-        $enrollment->update($request->validate([
-            'student_id'  => 'sometimes|required|exists:students,id',
-            'course_id'   => 'sometimes|required|exists:courses,id',
-            'enrolled_at' => 'sometimes|required|date',
-        ]));
-
         return response()->json($enrollment->load(['student', 'course']));
     }
 

@@ -12,7 +12,11 @@ class Course extends Model
     /** @use HasFactory<\Database\Factories\CourseFactory> */
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'course_name',
+        'course_code',
+        'description',
+    ];
 
     public function enrollments(): HasMany
     {

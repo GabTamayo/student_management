@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Actions\GenerateCourseCode;
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use Illuminate\Http\Request;
 
@@ -14,11 +16,14 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        $course = Course::create($request->validate([
+        $validated = $request->validate([
             'course_name' => 'required|string|max:255',
-            'course_code' => 'required|string|max:50|unique:courses',
             'description' => 'required|string',
-        ]));
+        ]);
+
+        $validated['course_code'] = GenerateCourseCode::generateCourseCode();
+
+        $course = Course::create($validated);
 
         return response()->json($course, 201);
     }

@@ -1,12 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Actions\GenerateStudentNo;
+use App\Http\Controllers\Controller;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         return response()->json(Student::with('courses')->get());
@@ -14,12 +19,15 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-        $student = Student::create($request->validate([
-            'first_name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'first_name' => 'required|string|min:2|max:255',
             'last_name'  => 'required|string|max:255',
             'email'      => 'required|email|unique:students',
             'address'    => 'required|string|max:255',
-            'student_no' => 'required|string|unique:students',
+        ]);
+
+        $student = Student::create(array_merge($validated, [
+            'student_no' => GenerateStudentNo::generateStudentNo(),
         ]));
 
         return response()->json($student, 201);
